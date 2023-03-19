@@ -12,6 +12,8 @@
 
 题目管理
 1. 列表
+
 ![输入图片说明](picture/questionlistimage.png)
 2. 新增
-![输入图片说明](picture/questionlist%E9%A2%98%E7%9B%AE%E5%88%97%E8%A1%A8.png)
+
+![输入图片说明](picture/newquestionimage.png)
