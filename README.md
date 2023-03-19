@@ -14,6 +14,31 @@
 1. 列表
 
 ![输入图片说明](picture/questionlistimage.png)
+
 2. 新增
 
 ![输入图片说明](picture/newquestionimage.png)
+
+创建考试
+
+1.内容
+
+![输入图片说明](picture/createcontentimage.png)
+
+2.组题
+
+![输入图片说明](picture/choicequestionsimage.png)
+
+3.选人
+
+![输入图片说明](picture/choiceusersimage.png)
+
+在线考试
+
+1.考试等待
+
+![输入图片说明](picture/waitimage.png)
+
+2.进入考试
+
+![输入图片说明](picture/onlineexamimage.png)
