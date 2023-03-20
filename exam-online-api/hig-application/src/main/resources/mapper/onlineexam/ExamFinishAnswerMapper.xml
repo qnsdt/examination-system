@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.onlineexam.mapper.ExamFinishAnswerMapper">
+    
+    <resultMap type="ExamFinishAnswer" id="ExamFinishAnswerResult">
+        <result property="examCode"    column="exam_code"    />
+        <result property="userCode"    column="user_code"    />
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="rightAnswer"    column="right_answer"    />
+        <result property="examScore"    column="exam_score"    />
+        <result property="questionsAnswer"    column="questions_answer"    />
+        <result property="questionsScore"    column="questions_score"    />
+    </resultMap>
+
+    <sql id="selectExamFinishAnswerVo">
+        select exam_code, user_code, questions_code, right_answer, exam_score, questions_answer, questions_score from exam_finish_answer
+    </sql>
+
+    <select id="selectExamFinishAnswerList" parameterType="ExamFinishAnswer" resultMap="ExamFinishAnswerResult">
+        <include refid="selectExamFinishAnswerVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectExamFinishAnswerById" parameterType="String" resultMap="ExamFinishAnswerResult">
+        <include refid="selectExamFinishAnswerVo"/>
+        where exam_code = #{examCode}
+    </select>
+        
+    <insert id="insertExamFinishAnswer" parameterType="ExamFinishAnswer" >
+        insert into exam_finish_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examCode != null">exam_code,</if>
+            <if test="userCode != null">user_code,</if>
+            <if test="questionsCode != null">questions_code,</if>
+            <if test="rightAnswer != null">right_answer,</if>
+            <if test="examScore != null">exam_score,</if>
+            <if test="questionsAnswer != null">questions_answer,</if>
+            <if test="questionsScore != null">questions_score,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examCode != null">#{examCode},</if>
+            <if test="userCode != null">#{userCode},</if>
+            <if test="questionsCode != null">#{questionsCode},</if>
+            <if test="rightAnswer != null">#{rightAnswer},</if>
+            <if test="examScore != null">#{examScore},</if>
+            <if test="questionsAnswer != null">#{questionsAnswer},</if>
+            <if test="questionsScore != null">#{questionsScore},</if>
+         </trim>
+    </insert>
+
+    <insert id="intoExamFinishAnswer" parameterType="ExamFinishAnswer" >
+        insert into exam_finish_answer 
+		select exam_code,user_code,questions_code,case when right_answer = questions_answer then questions_score else 0  end exam_score,right_answer,questions_answer,questions_score from
+		(
+		select a.exam_code, a.user_code, a.questions_code, REPLACE(b.right_answer, ',', '') as right_answer,a.questions_answer,b.questions_score from exam_task_answer  a
+		left join exam_questions_property b on b.questions_code = a.questions_code
+		where a.exam_code = #{examCode} and a.user_code = #{userCode} and a.questions_answer is not null 
+		order by a.questions_number
+		)
+    </insert>
+    
+    <update id="updateExamFinishAnswer" parameterType="ExamFinishAnswer">
+        update exam_finish_answer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examCode != null">#{examCode},</if>
+            <if test="userCode != null">user_code = #{userCode},</if>
+            <if test="questionsCode != null">questions_code = #{questionsCode},</if>
+            <if test="rightAnswer != null">right_answer = #{rightAnswer},</if>
+            <if test="examScore != null">exam_score = #{examScore},</if>
+            <if test="questionsAnswer != null">questions_answer = #{questionsAnswer},</if>
+            <if test="questionsScore != null">questions_score = #{questionsScore},</if>
+        </trim>
+        where exam_code = #{examCode}
+    </update>
+
+    <delete id="deleteExamFinishAnswerById" parameterType="String">
+        delete from exam_finish_answer where exam_code = #{examCode}
+    </delete>
+
+    <delete id="deleteExamFinishAnswer" parameterType="ExamFinishAnswer">
+        delete from exam_finish_answer where exam_code = #{examCode} and user_code = #{userCode}
+    </delete>
+
+    <delete id="deleteExamFinishAnswerByIds" parameterType="String">
+        delete from exam_finish_answer where exam_code in 
+        <foreach item="examCode" collection="array" open="(" separator="," close=")">
+            #{examCode}
+        </foreach>
+    </delete>
+</mapper>

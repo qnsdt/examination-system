@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.onlineexam.mapper.ExamQuestionsContentDataMapper">
+    
+    <resultMap type="ExamQuestionsContentData" id="ExamQuestionsContentDataResult">
+        <result property="bankCode"    column="bank_code"    />
+        <result property="examCode"    column="exam_code"    />
+        <result property="questionsId"    column="questions_id"    />
+        <result property="questionsNumber"    column="questions_number"    />
+        <result property="questionsNumberText"    column="questions_number_text"    />
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="questionsContent"    column="questions_content"    />
+        <result property="questionsType"    column="questions_type"    />
+        <result property="questionsScore"    column="questions_score"    />
+        <result property="rateNumber"    column="rate_number"    />
+    </resultMap>
+
+    <select id="selectExamQuestionsContent" parameterType="ExamQuestionsContentData" resultMap="ExamQuestionsContentDataResult">
+	    select a.bank_code, c.exam_code, a.questions_id, c.questions_number,a.questions_code, b.questions_content,a.questions_type, a.questions_score, a.rate_number from exam_questions_property a
+		left join exam_questions_content b on b.questions_code = a.questions_code
+		left join exam_task_questions c on c.questions_code  = a.questions_code and c.exam_code = #{examCode}
+		where a.questions_code = #{questionsCode}
+    </select>
+
+</mapper>

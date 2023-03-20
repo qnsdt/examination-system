@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.exam.mapper.ExamTaskManagerMapper">
+    
+    <resultMap type="ExamTaskManager" id="ExamTaskManagerResult">
+        <result property="examId"    column="exam_id"    />
+        <result property="examCode"    column="exam_code"    />
+        <result property="examName"    column="exam_name"    />
+        <result property="examDescribe"    column="exam_describe"    />
+        <result property="buildType"    column="build_type"    />
+        <result property="forceDone"    column="force_done"    />
+        <result property="examBank"    column="exam_bank"    />
+        <result property="examBankText"    column="exam_bank_text"    />
+        <result property="pictureUrl"    column="picture_url"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="examDuration"    column="exam_duration"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createDept"    column="create_dept"    />
+        <result property="createTime"    column="create_time"    />        
+    </resultMap>
+
+    <sql id="selectExamTaskManagerVo">
+         select exam_id, exam_code, exam_name, exam_describe, build_type, force_done, exam_bank, exam_bank_text, picture_url, start_time, end_time, exam_duration, status, create_by, create_dept, create_time from exam_task_manager
+    </sql>
+
+    <select id="selectExamTaskManagerList" parameterType="ExamTaskManager" resultMap="ExamTaskManagerResult">
+        <include refid="selectExamTaskManagerVo"/>
+        <where>  
+            <if test="examName != null  and examName != ''"> and exam_name  like '%' || #{examName} || '%'</if>
+            <if test="buildType != null  and buildType != ''"> and build_type = #{buildType}</if>
+		    <if test="startDateText != null and startDateText != ''"><!-- 开始时间检索 -->
+			    AND to_char(start_time,'yyyy-MM-dd') &gt;= #{startDateText}
+			</if>
+			<if test="endDateText != null and endDateText != ''"><!-- 结束时间检索 -->
+			    AND to_char(start_time,'yyyy-MM-dd') &lt;= #{endDateText}
+			</if>
+            
+        </where>
+         order by create_time desc
+    </select>
+    
+    <select id="selectExamTaskManagerById" parameterType="String" resultMap="ExamTaskManagerResult">
+        <include refid="selectExamTaskManagerVo"/>
+        where exam_code = #{examCode}
+    </select>
+        
+    <insert id="insertExamTaskManager" parameterType="ExamTaskManager" >
+        insert into exam_task_manager
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            exam_id,
+            <if test="examCode != null and examCode != ''">exam_code,</if>
+            <if test="examName != null and examName != ''">exam_name,</if>
+            <if test="examDescribe != null">exam_describe,</if>
+            <if test="buildType != null and buildType != ''">build_type,</if>
+            <if test="forceDone != null">force_done,</if>
+            <if test="examBank != null">exam_bank,</if>
+            <if test="examBankText != null">exam_bank_text,</if>
+            <if test="pictureUrl != null">picture_url,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="examDuration != null">exam_duration,</if>
+            status,
+            <if test="createBy != null">create_by,</if>
+            <if test="createDept != null">create_dept,</if>
+            create_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            (select nvl(max(exam_id),0) + 1  from exam_task_manager),
+            <if test="examCode != null and examCode != ''">#{examCode},</if>
+            <if test="examName != null and examName != ''">#{examName},</if>
+            <if test="examDescribe != null">#{examDescribe},</if>
+            <if test="buildType != null and buildType != ''">#{buildType},</if>
+            <if test="forceDone != null">#{forceDone},</if>
+            <if test="examBank != null">#{examBank},</if>
+            <if test="examBankText != null">#{examBankText},</if>
+            <if test="pictureUrl != null">#{pictureUrl},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="examDuration != null">#{examDuration},</if>
+            0,
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createDept != null">#{createDept},</if>
+            sysdate,
+         </trim>
+    </insert>
+
+    <update id="updateExamTaskManager" parameterType="ExamTaskManager">
+        update exam_task_manager
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examName != null and examName != ''">exam_name = #{examName},</if>
+            <if test="examDescribe != null">exam_describe = #{examDescribe},</if>
+            <if test="buildType != null and buildType != ''">build_type = #{buildType},</if>
+            <if test="forceDone != null">force_done = #{forceDone},</if>
+            <if test="examBank != null">exam_bank = #{examBank},</if>
+            <if test="examBankText != null">exam_bank_text = #{examBankText},</if>
+            <if test="pictureUrl != null">picture_url = #{pictureUrl},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="examDuration != null">exam_duration = #{examDuration},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createDept != null">create_dept = #{createDept},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where exam_code = #{examCode}
+    </update>
+
+    <delete id="deleteExamTaskManagerById" parameterType="String">
+        delete from exam_task_manager where exam_code = #{examCode}
+    </delete>
+
+    <delete id="deleteExamTaskManagerByIds" parameterType="String">
+        delete from exam_task_manager where exam_code in 
+        <foreach item="examCode" collection="array" open="(" separator="," close=")">
+            #{examCode}
+        </foreach>
+    </delete>
+</mapper>

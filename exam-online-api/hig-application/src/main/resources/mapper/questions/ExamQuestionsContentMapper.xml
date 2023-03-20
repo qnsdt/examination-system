@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.questions.mapper.ExamQuestionsContentMapper">
+    
+    <resultMap type="ExamQuestionsContent" id="ExamQuestionsContentResult">
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="questionsContent"    column="questions_content"    />
+    </resultMap>
+
+    <sql id="selectExamQuestionsContentVo">
+        select questions_code, questions_content from exam_questions_content
+    </sql>
+
+    <select id="selectExamQuestionsContentList" parameterType="ExamQuestionsContent" resultMap="ExamQuestionsContentResult">
+        <include refid="selectExamQuestionsContentVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectExamQuestionsContentById" parameterType="String" resultMap="ExamQuestionsContentResult">
+        <include refid="selectExamQuestionsContentVo"/>
+        where questions_code = #{questionsCode}
+    </select>
+        
+    <insert id="insertExamQuestionsContent" parameterType="ExamQuestionsContent" >
+        insert into exam_questions_content
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionsCode != null">questions_code,</if>
+            <if test="questionsContent != null and questionsContent != ''">questions_content,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionsCode != null">#{questionsCode},</if>
+            <if test="questionsContent != null and questionsContent != ''">#{questionsContent},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExamQuestionsContent" parameterType="ExamQuestionsContent">
+        update exam_questions_content
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionsContent != null and questionsContent != ''">questions_content = #{questionsContent},</if>
+        </trim>
+        where questions_code = #{questionsCode}
+    </update>
+
+    <delete id="deleteExamQuestionsContentById" parameterType="String">
+        delete from exam_questions_content where questions_code = #{questionsCode}
+    </delete>
+
+    <delete id="deleteExamQuestionsContentByIds" parameterType="String">
+        delete from exam_questions_content where questions_code in 
+        <foreach item="questionsCode" collection="array" open="(" separator="," close=")">
+            #{questionsCode}
+        </foreach>
+    </delete>
+</mapper>

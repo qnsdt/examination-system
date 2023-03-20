@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.system.mapper.SysGroupMapper">
+    
+    <resultMap type="SysGroup" id="SysGroupResult">
+        <result property="groupId"    column="group_id"    />
+        <result property="groupCode"    column="group_code"    />
+        <result property="groupName"    column="group_name"    />
+        <result property="groupDescribe"    column="group_describe"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="personNumber"    column="person_number"    />
+       
+    </resultMap>
+
+    <sql id="selectSysGroupVo">
+		select a.group_id, a.group_code, a.group_name, b.person_number,a.group_describe, a.status, a.create_by, a.create_time from sys_group a
+		<if test="status != null">left join</if>
+		<if test="status == null">inner join</if>		
+		(
+		select group_code,count(group_code) as person_number from sys_group_person group by group_code
+		) b on b.group_code = a.group_code
+    </sql>
+
+    <select id="selectSysGroupList" parameterType="SysGroup" resultMap="SysGroupResult">
+        <include refid="selectSysGroupVo"/>
+        <where>  
+            <if test="groupName != null  and groupName != ''"> and a.group_name like '%'|| #{groupName} ||'%'</if>
+        </where>
+        order by a.group_id
+    </select>
+    
+    <select id="selectChoiceSysGroupList" parameterType="String" resultMap="SysGroupResult">
+        <include refid="selectSysGroupVo"/>
+         where a.group_code in
+	    (
+	     select group_code from exam_task_group where exam_code = #{examCode}
+	    )
+	    order by a.group_id
+    </select>
+    
+    <select id="selectSysGroupById" parameterType="Long" resultMap="SysGroupResult">
+        <include refid="selectSysGroupVo"/>
+        where group_id = #{groupId}
+    </select>
+        
+    <insert id="insertSysGroup" parameterType="SysGroup" >
+        insert into sys_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            group_id,
+            <if test="groupCode != null and groupCode != ''">group_code,</if>
+            <if test="groupName != null and groupName != ''">group_name,</if>
+            <if test="groupDescribe != null">group_describe,</if>
+            status,
+            <if test="createBy != null">create_by,</if>
+            create_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            (select nvl(max(group_id),0) + 1  from sys_group),
+            <if test="groupCode != null and groupCode != ''">#{groupCode},</if>
+            <if test="groupName != null and groupName != ''">#{groupName},</if>
+            <if test="groupDescribe != null">#{groupDescribe},</if>
+            0,
+            <if test="createBy != null">#{createBy},</if>
+            sysdate,
+         </trim>
+    </insert>
+
+    <update id="updateSysGroup" parameterType="SysGroup">
+        update sys_group
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="groupCode != null and groupCode != ''">group_code = #{groupCode},</if>
+            <if test="groupName != null and groupName != ''">group_name = #{groupName},</if>
+            <if test="groupDescribe != null">group_describe = #{groupDescribe},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where group_id = #{groupId}
+    </update>
+
+    <delete id="deleteSysGroupById" parameterType="Long">
+        delete from sys_group where group_id = #{groupId}
+    </delete>
+
+    <delete id="deleteSysGroupByIds" parameterType="String">
+        delete from sys_group where group_id in 
+        <foreach item="groupId" collection="array" open="(" separator="," close=")">
+            #{groupId}
+        </foreach>
+    </delete>
+</mapper>

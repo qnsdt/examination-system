@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.questions.mapper.ExamQuestionsBankMapper">
+    
+    <resultMap type="ExamQuestionsBank" id="ExamQuestionsBankResult">
+        <result property="bankId"    column="bank_id"    />
+        <result property="bankCode"    column="bank_code"    />
+        <result property="bankName"    column="bank_name"    />
+        <result property="bankDescribe"    column="bank_describe"    />
+        <result property="bankVersion"    column="bank_version"    />
+        <result property="examType"    column="exam_type"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="onlineDate"    column="online_date"    />
+        <result property="pictureUrl"    column="picture_url"    />
+        <result property="radioNumber"    column="radio_number"    />
+        <result property="choiceNumber"    column="choice_number"    />
+        <result property="judgeNumber"    column="judge_number"    />
+        <result property="radioScore"    column="radio_score"    />
+        <result property="choiceScore"    column="choice_score"    />
+        <result property="judgeScore"    column="judge_score"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createDept"    column="create_dept"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectExamQuestionsBankVo">
+		select a.bank_id, a.bank_code, a.bank_name, a.bank_describe, a.bank_version, a.exam_type, b.type_name,a.online_date, a.picture_url, nvl(c.judge_number,0) as judge_number,nvl(d.radio_number,0) as radio_number,nvl(e.choice_number,0) as choice_number,a.radio_score, a.choice_score, a.judge_score, a.status, a.create_by, a.create_dept, a.create_time from exam_questions_bank a
+		left join exam_type b on b.type_id = a.exam_type
+		left join
+		(
+		select bank_code,count(questions_type) as judge_number from exam_questions_property where questions_type = 1 group by bank_code
+		) c on c.bank_code = a.bank_code
+		left join
+		(
+		select bank_code,count(questions_type) as radio_number from exam_questions_property where questions_type = 2 group by bank_code
+		) d on d.bank_code = a.bank_code
+		left join
+		(
+		select bank_code,count(questions_type) as choice_number from exam_questions_property where questions_type = 3 group by bank_code
+		) e on e.bank_code = a.bank_code    
+    </sql>
+
+    <select id="selectExamQuestionsBankList" parameterType="ExamQuestionsBank" resultMap="ExamQuestionsBankResult">
+        <include refid="selectExamQuestionsBankVo"/>
+        <where>  
+            <if test="bankName != null  and bankName != ''"> and bank_name like '%' || #{bankName} || '%'</if>
+            <if test="examType != null  and examType != ''"> and exam_type = #{examType} </if>
+        </where>
+        order by a.bank_id desc
+    </select>
+    
+    <select id="selectExamQuestionsBankListByCode" parameterType="String" resultMap="ExamQuestionsBankResult">
+        <include refid="selectExamQuestionsBankVo"/>
+        where a.bank_code in 
+        <foreach item="bankCode" collection="array" open="(" separator="," close=")">
+            #{bankCode}
+        </foreach>  
+    </select>
+    
+    <select id="selectExamQuestionsBankById" parameterType="String" resultMap="ExamQuestionsBankResult">
+        <include refid="selectExamQuestionsBankVo"/>
+        where a.bank_code = #{bankCode}
+    </select>
+        
+    <insert id="insertExamQuestionsBank" parameterType="ExamQuestionsBank" >
+        insert into exam_questions_bank
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            bank_id,
+            <if test="bankCode != null">bank_code,</if>
+            <if test="bankName != null and bankName != ''">bank_name,</if>
+            <if test="bankDescribe != null">bank_describe,</if>
+            <if test="bankVersion != null">bank_version,</if>
+            <if test="examType != null">exam_type,</if>
+            <if test="onlineDate != null">online_date,</if>
+            <if test="pictureUrl != null">picture_url,</if>
+            <if test="radioScore != null">radio_score,</if>
+            <if test="choiceScore != null">choice_score,</if>
+            <if test="judgeScore != null">judge_score,</if>
+            status,
+            <if test="createBy != null">create_by,</if>
+            <if test="createDept != null">create_dept,</if>
+            create_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            (select nvl(max(bank_id),0) + 1  from exam_questions_bank),
+            <if test="bankCode != null">#{bankCode},</if>
+            <if test="bankName != null and bankName != ''">#{bankName},</if>
+            <if test="bankDescribe != null">#{bankDescribe},</if>
+            <if test="bankVersion != null">#{bankVersion},</if>
+            <if test="examType != null">#{examType},</if>
+            <if test="onlineDate != null">#{onlineDate},</if>
+            <if test="pictureUrl != null">#{pictureUrl},</if>
+            <if test="radioScore != null">#{radioScore},</if>
+            <if test="choiceScore != null">#{choiceScore},</if>
+            <if test="judgeScore != null">#{judgeScore},</if>
+            0,
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createDept != null">#{createDept},</if>
+            sysdate,
+         </trim>
+    </insert>
+
+    <update id="updateExamQuestionsBank" parameterType="ExamQuestionsBank">
+        update exam_questions_bank
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bankId != null">bank_id = #{bankId},</if>
+            <if test="bankName != null and bankName != ''">bank_name = #{bankName},</if>
+            <if test="bankDescribe != null">bank_describe = #{bankDescribe},</if>
+            <if test="bankVersion != null">bank_version = #{bankVersion},</if>
+            <if test="examType != null">exam_type = #{examType},</if>
+            <if test="onlineDate != null">online_date = #{onlineDate},</if>
+            <if test="pictureUrl != null">picture_url = #{pictureUrl},</if>
+            <if test="radioScore != null">radio_score = #{radioScore},</if>
+            <if test="choiceScore != null">choice_score = #{choiceScore},</if>
+            <if test="judgeScore != null">judge_score = #{judgeScore},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createDept != null">create_dept = #{createDept},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where bank_code = #{bankCode}
+    </update>
+
+    <delete id="deleteExamQuestionsBankById" parameterType="String">
+        delete from exam_questions_bank where bank_code = #{bankCode}
+    </delete>
+
+    <delete id="deleteExamQuestionsBankByIds" parameterType="String">
+        delete from exam_questions_bank where bank_code in 
+        <foreach item="bankCode" collection="array" open="(" separator="," close=")">
+            #{bankCode}
+        </foreach>
+    </delete>
+</mapper>

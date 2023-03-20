@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.onlineexam.mapper.ExamTaskAnswerMapper">
+    
+    <resultMap type="ExamTaskAnswer" id="ExamTaskAnswerResult">
+        <result property="examCode"    column="exam_code"    />
+        <result property="userCode"    column="user_code"    />
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="questionsNumber"    column="questions_number"    />
+        <result property="questionsType"    column="questions_type"    />
+        <result property="questionsAnswer"    column="questions_answer"    />
+        <result property="isMark"    column="is_mark"    />
+        <result property="isCurrent"    column="is_current"    />
+    </resultMap>
+
+    <sql id="selectExamTaskAnswerVo">
+        select exam_code, user_code, questions_code, questions_number, questions_type, questions_answer, is_mark, is_current from exam_task_answer
+    </sql>
+
+    <select id="selectExamTaskAnswerList" parameterType="ExamTaskAnswer" resultMap="ExamTaskAnswerResult">
+        <include refid="selectExamTaskAnswerVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectExamTaskAnswerById" parameterType="String" resultMap="ExamTaskAnswerResult">
+        <include refid="selectExamTaskAnswerVo"/>
+        where exam_code = #{examCode}
+    </select>
+        
+    <insert id="insertExamTaskAnswer" parameterType="ExamTaskAnswer">
+        insert into exam_task_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">exam_code,</if>
+            <if test="userCode != null and userCode != ''">user_code,</if>
+            <if test="questionsCode != null and questionsCode != ''">questions_code,</if>
+            <if test="questionsNumber != null">questions_number,</if>
+            <if test="questionsType != null">questions_type,</if>
+            <if test="questionsAnswer != null">questions_answer,</if>
+            <if test="isMark != null">is_mark,</if>
+            <if test="isCurrent != null">is_current,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">#{examCode},</if>
+            <if test="userCode != null and userCode != ''">#{userCode},</if>
+            <if test="questionsCode != null and questionsCode != ''">#{questionsCode},</if>
+            <if test="questionsNumber != null">#{questionsNumber},</if>
+            <if test="questionsType != null">#{questionsType},</if>
+            <if test="questionsAnswer != null">#{questionsAnswer},</if>
+            <if test="isMark != null">#{isMark},</if>
+            <if test="isCurrent != null">#{isCurrent},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExamTaskAnswer" parameterType="ExamTaskAnswer">
+        update exam_task_answer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userCode != null and userCode != ''">user_code = #{userCode},</if>
+            <if test="questionsCode != null and questionsCode != ''">questions_code = #{questionsCode},</if>
+            <if test="questionsNumber != null">questions_number = #{questionsNumber},</if>
+            <if test="questionsType != null">questions_type = #{questionsType},</if>
+            <if test="questionsAnswer != null">questions_answer = #{questionsAnswer},</if>
+            <if test="isMark != null">is_mark = #{isMark},</if>
+            <if test="isCurrent != null">is_current = #{isCurrent},</if>
+        </trim>
+        where exam_code = #{examCode}
+    </update>
+
+    <delete id="deleteExamTaskAnswer" parameterType="ExamTaskAnswer">
+        delete from exam_task_answer where exam_code = #{examCode} and user_code = #{userCode} and questions_code = #{questionsCode}
+    </delete>
+    
+    <delete id="deleteExamTaskAnswerById" parameterType="String">
+        delete from exam_task_answer where exam_code = #{examCode}
+    </delete>
+
+    <delete id="deleteExamTaskAnswerByIds" parameterType="String">
+        delete from exam_task_answer where exam_code in 
+        <foreach item="examCode" collection="array" open="(" separator="," close=")">
+            #{examCode}
+        </foreach>
+    </delete>
+</mapper>

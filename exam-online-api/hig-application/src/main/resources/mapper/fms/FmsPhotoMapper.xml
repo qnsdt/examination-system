@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.fms.mapper.FmsPhotoMapper">
+    
+    <resultMap type="FmsPhoto" id="FmsPhotoResult">
+        <result property="photoId"    column="photo_id"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="photoPath"    column="photo_path"    />
+        <result property="photoUrl"    column="photo_url"    />
+        <result property="originalName"    column="original_name"    />
+        <result property="uploadName"    column="upload_name"    />
+        <result property="uploadDept"    column="upload_dept"    />
+        <result property="uploadTime"    column="upload_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectFmsPhotoVo">
+        select photo_id, file_name, photo_path, photo_url, original_name, upload_name, upload_dept, upload_time, status from fms_photo
+    </sql>
+
+    <select id="selectFmsPhotoList" parameterType="FmsPhoto" resultMap="FmsPhotoResult">
+        <include refid="selectFmsPhotoVo"/>
+        <where>  
+            <if test="originalName != null  and originalName != ''"> and original_name like '%' || #{originalName} || '%'</if>
+        </where>
+          order by photo_id
+    </select>
+    
+    <select id="selectFmsPhotoById" parameterType="Long" resultMap="FmsPhotoResult">
+        <include refid="selectFmsPhotoVo"/>
+        where photo_id = #{photoId}
+    </select>
+        
+    <insert id="insertFmsPhoto" parameterType="FmsPhoto" useGeneratedKeys="true" keyProperty="photoId">
+        insert into fms_photo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            photo_id，
+            <if test="fileName != null and fileName != ''">file_name,</if>
+            <if test="photoPath != null and photoPath != ''">photo_path,</if>
+            <if test="photoUrl != null and photoUrl != ''">photo_url,</if>
+            <if test="originalName != null">original_name,</if>
+            <if test="uploadName != null">upload_name,</if>
+            <if test="uploadDept != null">upload_dept,</if>
+            upload_time,
+            status,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            (select nvl(max(photo_id),0) + 1 from fms_photo),
+            <if test="fileName != null and fileName != ''">#{fileName},</if>
+            <if test="photoPath != null and photoPath != ''">#{photoPath},</if>
+            <if test="photoUrl != null and photoUrl != ''">#{photoUrl},</if>
+            <if test="originalName != null">#{originalName},</if>
+            <if test="uploadName != null">#{uploadName},</if>
+            <if test="uploadDept != null">#{uploadDept},</if>
+            sysdate,
+            0,
+         </trim>
+    </insert>
+
+    <update id="updateFmsPhoto" parameterType="FmsPhoto">
+        update fms_photo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileName != null and fileName != ''">file_name = #{fileName},</if>
+            <if test="photoPath != null and photoPath != ''">photo_path = #{photoPath},</if>
+            <if test="photoUrl != null and photoUrl != ''">photo_url = #{photoUrl},</if>
+            <if test="originalName != null">original_name = #{originalName},</if>
+            <if test="uploadName != null">upload_name = #{uploadName},</if>
+            <if test="uploadDept != null">upload_dept = #{uploadDept},</if>
+            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where photo_id = #{photoId}
+    </update>
+
+    <delete id="deleteFmsPhotoById" parameterType="Long">
+        delete from fms_photo where photo_id = #{photoId}
+    </delete>
+
+    <delete id="deleteFmsPhotoByIds" parameterType="String">
+        delete from fms_photo where photo_id in 
+        <foreach item="photoId" collection="array" open="(" separator="," close=")">
+            #{photoId}
+        </foreach>
+    </delete>
+</mapper>

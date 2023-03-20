@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.system.mapper.SysUserDataMapper">
+    
+    <resultMap type="SysUserData" id="SysUserDataResult">
+		<id     property="userId"       column="user_id"      />
+		<result property="deptId"       column="dept_id"      />
+		<result property="deptName"       column="dept_name"      />
+		<result property="userName"     column="user_name"    />
+		<result property="userCode"     column="user_code"    />
+		<result property="nickName"     column="nick_name"    />
+		<result property="email"        column="email"        />
+		<result property="phonenumber"  column="phonenumber"  />
+		<result property="sex"          column="sex"          />
+		<result property="avatar"       column="avatar"       />
+		<result property="status"       column="status"       />
+		<result property="remark"       column="remark"       />
+		<result property="choiceCode"       column="choice_code"       />
+	    <result property="orderId"       column="order_id"       />
+		
+	</resultMap>
+
+    <sql id="selectUserVo">
+        select a.user_id,a.user_code,a.user_name,a.nick_name,a.dept_id,dept_name,a.email,a.phonenumber,a.sex,a.avatar,a.status,a.remark from sys_user a
+        left join sys_dept b on b.dept_id = a.dept_id
+    </sql>
+
+    <select id="selectUserList" parameterType="SysUserData" resultMap="SysUserDataResult">
+        <include refid="selectUserVo"/>
+        <where>
+        <if test="deptId != null and deptId != 0">
+			AND a.dept_id = #{deptId} 
+		</if>         
+        </where>
+        order by a.user_id
+    </select>
+
+    <sql id="selectChoiceUserVo">
+        select b.user_id,a.user_code,b.user_name,b.nick_name,b.dept_id,c.dept_name,b.email,b.phonenumber,b.sex,b.avatar,b.status,b.remark,a.order_id from temp_user_choice a
+		left join sys_user b on b.user_code = a.user_code
+		left join sys_dept c on c.dept_id = b.dept_id
+		where a.choice_code = #{choiceCode}   
+		order by a.order_id desc
+    </sql>
+
+    <select id="selectChoiceUserList" parameterType="SysUserData" resultMap="SysUserDataResult">
+        <include refid="selectChoiceUserVo"/>
+        <where>        
+        </where>
+    </select>    
+
+</mapper>

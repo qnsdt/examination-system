@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.exam.mapper.ExamTaskGroupMapper">
+    
+    <resultMap type="ExamTaskGroup" id="ExamTaskGroupResult">
+        <result property="examCode"    column="exam_code"    />
+        <result property="groupCode"    column="group_code"    />
+        <result property="orderId"    column="order_id"    />
+    </resultMap>
+
+    <sql id="selectExamTaskGroupVo">
+        select exam_code, group_code, order_id from exam_task_group
+    </sql>
+
+    <select id="selectExamTaskGroupList" parameterType="ExamTaskGroup" resultMap="ExamTaskGroupResult">
+        <include refid="selectExamTaskGroupVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectExamTaskGroupById" parameterType="String" resultMap="ExamTaskGroupResult">
+        <include refid="selectExamTaskGroupVo"/>
+        where exam_code = #{examCode}
+    </select>
+        
+    <insert id="insertExamTaskGroup" parameterType="ExamTaskGroup" >
+        insert into exam_task_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">exam_code,</if>
+            <if test="groupCode != null and groupCode != ''">group_code,</if>
+            order_id,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">#{examCode},</if>
+            <if test="groupCode != null and groupCode != ''">#{groupCode},</if>
+            (select nvl(max(order_id),0) + 1 from exam_task_group where exam_code = #{examCode}),
+         </trim>
+    </insert>
+
+    <update id="updateExamTaskGroup" parameterType="ExamTaskGroup">
+        update exam_task_group
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="groupCode != null and groupCode != ''">group_code = #{groupCode},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+        </trim>
+        where exam_code = #{examCode}
+    </update>
+
+    <delete id="deleteExamTaskGroupById" parameterType="String">
+        delete from exam_task_group where exam_code = #{examCode}
+    </delete>
+
+    <delete id="deleteExamTaskGroupByIds" parameterType="String">
+        delete from exam_task_group where exam_code in 
+        <foreach item="examCode" collection="array" open="(" separator="," close=")">
+            #{examCode}
+        </foreach>
+    </delete>
+</mapper>

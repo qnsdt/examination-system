@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.system.mapper.TempUserChoiceMapper">
+    
+    <resultMap type="TempUserChoice" id="TempUserChoiceResult">
+        <result property="choiceCode"    column="choice_code"    />
+        <result property="userCode"    column="user_code"    />
+        <result property="orderId"    column="order_id"    />
+    </resultMap>
+
+    <sql id="selectTempUserChoiceVo">
+        select choice_code, user_code, order_id from temp_user_choice
+    </sql>
+
+    <select id="selectTempUserChoiceList" parameterType="TempUserChoice" resultMap="TempUserChoiceResult">
+        <include refid="selectTempUserChoiceVo"/>
+        <where>
+            <if test="choiceCode != null "> and choice_code = #{choiceCode} </if>          
+        </where>
+        order by order_id desc
+    </select>
+    
+    <select id="selectTempUserChoiceById" parameterType="String" resultMap="TempUserChoiceResult">
+        <include refid="selectTempUserChoiceVo"/>
+        where choice_code = #{choiceCode}
+    </select>
+        
+    <insert id="insertTempUserChoice" parameterType="TempUserChoice">
+        insert into temp_user_choice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="choiceCode != null and choiceCode != ''">choice_code,</if>
+            <if test="userCode != null and userCode != ''">user_code,</if>
+            order_id,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="choiceCode != null and choiceCode != ''">#{choiceCode},</if>
+            <if test="userCode != null and userCode != ''">#{userCode},</if>
+            (select nvl(max(order_id),0) + 1 from temp_user_choice where choice_code = #{choiceCode}),
+         </trim>
+    </insert>
+
+    <update id="updateTempUserChoice" parameterType="TempUserChoice">
+        update temp_user_choice
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userCode != null and userCode != ''">user_code = #{userCode},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+        </trim>
+        where choice_code = #{choiceCode}
+    </update>
+
+    <!-- <delete id="deleteTempUserChoiceById" parameterType="String">
+        delete from temp_user_choice where choice_code = #{choiceCode}
+    </delete> -->
+
+    <delete id="deleteTempUserChoice" parameterType="TempUserChoice">
+        delete from temp_user_choice where choice_code = #{choiceCode} and user_code = #{userCode}
+    </delete>
+
+
+    <!-- <delete id="deleteTempUserChoiceByIds" parameterType="String">
+        delete from temp_user_choice where choice_code in 
+        <foreach item="choiceCode" collection="array" open="(" separator="," close=")">
+            #{choiceCode}
+        </foreach>
+    </delete> -->
+</mapper>

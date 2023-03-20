@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.exam.mapper.ExamTaskQuestionsMapper">
+    
+    <resultMap type="ExamTaskQuestions" id="ExamTaskQuestionsResult">
+        <result property="examCode"    column="exam_code"    />
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="questionsNumber"    column="questions_number"    />
+    </resultMap>
+
+    <sql id="selectExamTaskQuestionsVo">
+        select exam_code, questions_code, questions_number from exam_task_questions
+    </sql>
+
+    <select id="selectExamTaskQuestionsList" parameterType="ExamTaskQuestions" resultMap="ExamTaskQuestionsResult">
+        <include refid="selectExamTaskQuestionsVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectExamTaskQuestionsById" parameterType="String" resultMap="ExamTaskQuestionsResult">
+        <include refid="selectExamTaskQuestionsVo"/>
+        where exam_code = #{examCode}
+    </select>
+        
+    <insert id="insertExamTaskQuestions" parameterType="ExamTaskQuestions" >
+        insert into exam_task_questions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">exam_code,</if>
+            <if test="questionsCode != null and questionsCode != ''">questions_code,</if>
+            <if test="questionsNumber != null">questions_number,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">#{examCode},</if>
+            <if test="questionsCode != null and questionsCode != ''">#{questionsCode},</if>
+            <if test="questionsNumber != null">#{questionsNumber},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExamTaskQuestions" parameterType="ExamTaskQuestions">
+        update exam_task_questions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionsCode != null and questionsCode != ''">questions_code = #{questionsCode},</if>
+            <if test="questionsNumber != null">questions_number = #{questionsNumber},</if>
+        </trim>
+        where exam_code = #{examCode}
+    </update>
+
+    <delete id="deleteExamTaskQuestionsById" parameterType="String">
+        delete from exam_task_questions where exam_code = #{examCode}
+    </delete>
+
+    <delete id="deleteExamTaskQuestionsByIds" parameterType="String">
+        delete from exam_task_questions where exam_code in 
+        <foreach item="examCode" collection="array" open="(" separator="," close=")">
+            #{examCode}
+        </foreach>
+    </delete>
+</mapper>

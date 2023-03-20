@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.questions.mapper.ExamQuestionsAnswerMapper">
+    
+    <resultMap type="ExamQuestionsAnswer" id="ExamQuestionsAnswerResult">
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="optionCode"    column="option_code"    />
+        <result property="optionDescribe"    column="option_describe"    />
+        <result property="isRight"    column="is_right"    />
+        <result property="orderId"    column="order_id"    />
+    </resultMap>
+
+    <sql id="selectExamQuestionsAnswerVo">
+        select questions_code, option_code, option_describe, is_right, order_id from exam_questions_answer
+    </sql>
+
+    <select id="selectExamQuestionsAnswerList" parameterType="ExamQuestionsAnswer" resultMap="ExamQuestionsAnswerResult">
+        <include refid="selectExamQuestionsAnswerVo"/>
+        <where>  
+          <if test="questionsCode != null  and questionsCode != ''"> and questions_code = #{questionsCode}</if>
+        
+        </where>
+    </select>
+    
+    <select id="selectExamQuestionsOptionList" parameterType="String" resultMap="ExamQuestionsAnswerResult">
+        select questions_code,option_code,option_describe,order_id from exam_questions_answer 
+        where questions_code = #{questionsCode} 
+        order by order_id
+    </select>
+    
+    <select id="selectExamQuestionsAnswerById" parameterType="String" resultMap="ExamQuestionsAnswerResult">
+        <include refid="selectExamQuestionsAnswerVo"/>
+        where questions_code = #{questionsCode}
+    </select>
+        
+    <insert id="insertExamQuestionsAnswer" parameterType="ExamQuestionsAnswer" >
+        insert into exam_questions_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionsCode != null and questionsCode != ''">questions_code,</if>
+            <if test="optionCode != null and optionCode != ''">option_code,</if>
+            <if test="optionDescribe != null and optionDescribe != ''">option_describe,</if>
+            <if test="isRight != null">is_right,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="orderId == null or orderId == ''">order_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionsCode != null and questionsCode != ''">#{questionsCode},</if>
+            <if test="optionCode != null and optionCode != ''">#{optionCode},</if>
+            <if test="optionDescribe != null and optionDescribe != ''">#{optionDescribe},</if>
+            <if test="isRight != null">#{isRight},</if>
+            <if test="orderId != null">#{orderId},</if>
+            <if test="orderId == null or orderId == ''">
+                (select nvl(max(order_id),0) + 1  from exam_questions_answer where questions_code = #{questionsCode}),              
+            </if>
+            
+         </trim>
+    </insert>
+
+    <update id="updateExamQuestionsAnswer" parameterType="ExamQuestionsAnswer">
+        update exam_questions_answer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="optionCode != null and optionCode != ''">option_code = #{optionCode},</if>
+            <if test="optionDescribe != null and optionDescribe != ''">option_describe = #{optionDescribe},</if>
+            <if test="isRight != null">is_right = #{isRight},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+        </trim>
+        where questions_code = #{questionsCode}
+    </update>
+
+    <delete id="deleteExamQuestionsAnswerById" parameterType="String">
+        delete from exam_questions_answer where questions_code = #{questionsCode}
+    </delete>
+
+    <delete id="deleteExamQuestionsAnswerByIds" parameterType="String">
+        delete from exam_questions_answer where questions_code in 
+        <foreach item="questionsCode" collection="array" open="(" separator="," close=")">
+            #{questionsCode}
+        </foreach>
+    </delete>
+</mapper>

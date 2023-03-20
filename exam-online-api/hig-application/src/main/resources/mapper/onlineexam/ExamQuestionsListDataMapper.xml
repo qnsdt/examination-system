@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.onlineexam.mapper.ExamQuestionsListDataMapper">
+    
+    <resultMap type="ExamQuestionsListData" id="ExamQuestionsListDataResult">
+        <result property="examCode"    column="exam_code"    />
+        <result property="userCode"    column="user_code"    />
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="questionsNumber"    column="questions_number"    />
+        <result property="questionsType"    column="questions_type"    />
+        <result property="questionsScore"    column="questions_score"    />
+        <result property="questionsAnswer"    column="questions_answer"    />
+        <result property="isMark"    column="is_mark"    />
+        <result property="isCurrent"    column="is_current"    />
+     </resultMap>
+
+    <select id="selectQuestionsList" parameterType="ExamQuestionsListData" resultMap="ExamQuestionsListDataResult">
+		select a.exam_code, a.questions_code, a.questions_number,b.questions_type,b.questions_score,c.questions_answer,nvl(c.is_mark,1） as is_mark,nvl(c.is_current,1) as is_current from exam_task_questions a 
+		left join exam_questions_property b on b.questions_code = a.questions_code
+		left join exam_task_answer c on c.exam_code = a.exam_code and c.questions_code = a.questions_code  and c.user_code = #{userCode}
+		where a.exam_code = #{examCode}
+		order by questions_number
+    </select>
+
+</mapper>

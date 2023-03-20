@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.system.mapper.SysGroupPersonMapper">
+    
+    <resultMap type="SysGroupPerson" id="SysGroupPersonResult">
+        <result property="groupCode"    column="group_code"    />
+        <result property="personCode"    column="person_code"    />
+        <result property="orderId"    column="order_id"    />
+    </resultMap>
+
+    <sql id="selectSysGroupPersonVo">
+        select group_code, person_code, order_id from sys_group_person
+    </sql>
+
+    <select id="selectSysGroupPersonList" parameterType="SysGroupPerson" resultMap="SysGroupPersonResult">
+        <include refid="selectSysGroupPersonVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectSysGroupPersonById" parameterType="String" resultMap="SysGroupPersonResult">
+        <include refid="selectSysGroupPersonVo"/>
+        where group_code = #{groupCode}
+    </select>
+        
+    <insert id="insertSysGroupPerson" parameterType="SysGroupPerson" >
+        insert into sys_group_person
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="groupCode != null and groupCode != ''">group_code,</if>
+            <if test="personCode != null and personCode != ''">person_code,</if>
+            order_id,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="groupCode != null and groupCode != ''">#{groupCode},</if>
+            <if test="personCode != null and personCode != ''">#{personCode},</if>
+            (select nvl(max(order_id),0) + 1 from sys_group_person where group_code = #{groupCode}),
+         </trim>
+    </insert>
+
+    <update id="updateSysGroupPerson" parameterType="SysGroupPerson">
+        update sys_group_person
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="personCode != null and personCode != ''">person_code = #{personCode},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+        </trim>
+        where group_code = #{groupCode}
+    </update>
+
+    <delete id="deleteSysGroupPersonById" parameterType="String">
+        delete from sys_group_person where group_code = #{groupCode}
+    </delete>
+
+    <delete id="deleteSysGroupPersonByIds" parameterType="String">
+        delete from sys_group_person where group_code in 
+        <foreach item="groupCode" collection="array" open="(" separator="," close=")">
+            #{groupCode}
+        </foreach>
+    </delete>
+</mapper>

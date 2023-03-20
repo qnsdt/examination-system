@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.exam.mapper.ExamTaskPersonMapper">
+    
+     <resultMap type="ExamTaskPerson" id="ExamTaskPersonResult">
+        <result property="examCode"    column="exam_code"    />
+        <result property="userCode"    column="user_code"    />
+        <result property="taskCode"    column="task_code"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectExamTaskPersonVo">
+        select exam_code, user_code, task_code, start_time, end_time, status from exam_task_person
+    </sql>
+
+    <select id="selectExamTaskPersonList" parameterType="ExamTaskPerson" resultMap="ExamTaskPersonResult">
+        <include refid="selectExamTaskPersonVo"/>
+        <where>  
+         where exam_code = #{examCode}
+        </where>
+    </select>
+    
+    <select id="selectExamTaskPersonById" parameterType="String" resultMap="ExamTaskPersonResult">
+        <include refid="selectExamTaskPersonVo"/>
+        where exam_code = #{examCode}
+    </select>
+
+        
+    <insert id="insertExamTaskPerson" parameterType="ExamTaskPerson" >
+        insert into exam_task_person
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examCode != null">exam_code,</if>
+            <if test="userCode != null">user_code,</if>
+            <if test="taskCode != null">task_code,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examCode != null">#{examCode},</if>
+            <if test="userCode != null">#{userCode},</if>
+            <if test="taskCode != null">#{taskCode},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+    
+    <insert id="batchInsertPerson" parameterType="String" >
+		insert into exam_task_person (exam_code,task_code,user_code,status)
+		select #{examCode} as exam_code,sys_guid() as task_code,user_code,1 as status from
+		(
+		  select distinct person_code as user_code from sys_group_person 
+		  where group_code in
+		  (
+		  select group_code from exam_task_group where exam_code = #{examCode} 
+		)
+		)		
+    </insert>
+
+    <select id="selectExamTaskPerson" parameterType="ExamTaskPerson" resultMap="ExamTaskPersonResult">
+        <include refid="selectExamTaskPersonVo"/>
+        where exam_code = #{examCode} and user_code = #{userCode}
+    </select>
+    
+    <update id="updateExamTaskPerson" parameterType="ExamTaskPerson">
+        update exam_task_person
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userCode != null">user_code = #{userCode},</if>
+            <if test="taskCode != null">task_code = #{taskCode},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where exam_code = #{examCode}
+    </update>
+    
+   <update id="updateStartTime" parameterType="ExamTaskPerson">
+        update exam_task_person set start_time = sysdate
+        where exam_code = #{examCode} and user_code = #{userCode}
+    </update>
+    
+    <update id="updateDoneStatus" parameterType="ExamTaskPerson">
+        update exam_task_person set end_time = sysdate, status = 0 
+        where exam_code = #{examCode} and user_code = #{userCode}
+    </update>
+
+    <delete id="deleteExamTaskPersonById" parameterType="String">
+        delete from exam_task_person where exam_code = #{examCode}
+    </delete>
+
+    <delete id="deleteExamTaskPersonByIds" parameterType="String">
+        delete from exam_task_person where exam_code in 
+        <foreach item="examCode" collection="array" open="(" separator="," close=")">
+            #{examCode}
+        </foreach>
+    </delete>
+</mapper>

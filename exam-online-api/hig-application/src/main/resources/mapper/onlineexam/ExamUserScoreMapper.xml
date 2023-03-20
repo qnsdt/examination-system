@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.onlineexam.mapper.ExamUserScoreMapper">
+    
+    <resultMap type="ExamUserScore" id="ExamUserScoreResult">
+        <result property="examCode"    column="exam_code"    />
+        <result property="userCode"    column="user_code"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="examScore"    column="exam_score"    />
+        <result property="questionsScore"    column="questions_score"    />
+        <result property="examNumber"    column="exam_number"    />
+        <result property="answeredNumber"    column="answered_number"    />
+        <result property="notAnswered"    column="not_answered"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectExamUserScoreVo">
+        select exam_code, user_code, start_time, end_time, exam_score, questions_score, exam_number, answered_number, not_answered, status from exam_user_score
+    </sql>
+
+    <select id="selectExamUserScoreList" parameterType="ExamUserScore" resultMap="ExamUserScoreResult">
+        <include refid="selectExamUserScoreVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectExamUserScoreById" parameterType="String" resultMap="ExamUserScoreResult">
+        <include refid="selectExamUserScoreVo"/>
+        where exam_code = #{examCode}
+    </select>
+        
+    <insert id="insertExamUserScore" parameterType="ExamUserScore" >
+        insert into exam_user_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">exam_code,</if>
+            <if test="userCode != null and userCode != ''">user_code,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="examScore != null">exam_score,</if>
+            <if test="questionsScore != null">questions_score,</if>
+            <if test="examNumber != null">exam_number,</if>
+            <if test="answeredNumber != null">answered_number,</if>
+            <if test="notAnswered != null">not_answered,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examCode != null and examCode != ''">#{examCode},</if>
+            <if test="userCode != null and userCode != ''">#{userCode},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="examScore != null">#{examScore},</if>
+            <if test="questionsScore != null">#{questionsScore},</if>
+            <if test="examNumber != null">#{examNumber},</if>
+            <if test="answeredNumber != null">#{answeredNumber},</if>
+            <if test="notAnswered != null">#{notAnswered},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <insert id="intoExamUserScore" parameterType="ExamUserScore" >
+        insert into exam_user_score
+		select a.exam_code, a.user_code, b.start_time, sysdate as end_time, d.questions_score, a.exam_score,c.exam_number,a.answered_number,c.exam_number - a.answered_number as not_answered, 0 as status from
+		(
+		select exam_code, user_code, sum(exam_score) as exam_score,count(questions_code) as answered_number from exam_finish_answer 
+		where exam_code = #{examCode} and user_code = #{userCode} group by exam_code,user_code
+		) a
+		left join exam_task_person b on b.exam_code = #{examCode} and b.user_code = #{userCode}
+		left join 
+		(
+		select count(questions_code) as exam_number from exam_task_questions where exam_code = #{examCode}
+		) c on 1= 1
+		left join 
+		(
+		select sum(questions_score) as questions_score from exam_questions_property where questions_code in
+		(
+		select questions_code from exam_task_questions where exam_code = #{examCode}
+		)
+		) d on 1=1
+    </insert>
+    
+    <update id="updateExamUserScore" parameterType="ExamUserScore">
+        update exam_user_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userCode != null and userCode != ''">user_code = #{userCode},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="examScore != null">exam_score = #{examScore},</if>
+            <if test="questionsScore != null">questions_score = #{questionsScore},</if>
+            <if test="examNumber != null">exam_number = #{examNumber},</if>
+            <if test="answeredNumber != null">answered_number = #{answeredNumber},</if>
+            <if test="notAnswered != null">not_answered = #{notAnswered},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where exam_code = #{examCode}
+    </update>
+
+    <delete id="deleteExamUserScore" parameterType="ExamUserScore">
+        delete from exam_user_score where exam_code = #{examCode} and user_code = #{userCode}
+    </delete>
+    
+    <delete id="deleteExamUserScoreById" parameterType="String">
+        delete from exam_user_score where exam_code = #{examCode}
+    </delete>
+
+    <delete id="deleteExamUserScoreByIds" parameterType="String">
+        delete from exam_user_score where exam_code in 
+        <foreach item="examCode" collection="array" open="(" separator="," close=")">
+            #{examCode}
+        </foreach>
+    </delete>
+</mapper>

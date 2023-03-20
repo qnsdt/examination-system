@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.questions.mapper.ExamQuestionsPropertyMapper">
+    
+    <resultMap type="ExamQuestionsProperty" id="ExamQuestionsPropertyResult">
+        <result property="rownum"    column="rownum"    />
+        <result property="bankCode"    column="bank_code"    />
+        <result property="questionsId"    column="questions_id"    />
+        <result property="questionsCode"    column="questions_code"    />
+        <result property="questionsTitle"    column="questions_title"    />
+        <result property="questionsType"    column="questions_type"    />
+        <result property="questionsScore"    column="questions_score"    />
+        <result property="rateNumber"    column="rate_number"    />
+        <result property="rightAnswer"    column="right_answer"    />
+        <result property="answerAnalyse"    column="answer_analyse"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createDept"    column="create_dept"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectExamQuestionsPropertyVo">
+		select rownum, bank_code, questions_id, questions_code, questions_title, questions_type, questions_score, rate_number, right_answer, answer_analyse, status, create_by, create_dept, create_time from 
+		(   
+		select bank_code, questions_id, questions_code, substr(questions_title,1,50) as questions_title, questions_type, questions_score, rate_number, right_answer, answer_analyse, status, create_by, create_dept, create_time from exam_questions_property
+		)    
+    </sql>
+
+    <select id="selectExamQuestionsPropertyList" parameterType="ExamQuestionsProperty" resultMap="ExamQuestionsPropertyResult">
+        <include refid="selectExamQuestionsPropertyVo"/>
+        <where>  
+          <if test="bankCode != null  and bankCode != ''"> and bank_code = #{bankCode}</if>
+        </where>
+        order by questions_id        
+    </select>
+    
+    <select id="selectExamQuestionsPropertyById" parameterType="String" resultMap="ExamQuestionsPropertyResult">
+        <include refid="selectExamQuestionsPropertyVo"/>
+        where questions_code = #{questionsCode}
+    </select>
+        
+    <insert id="insertExamQuestionsProperty" parameterType="ExamQuestionsProperty" >
+        insert into exam_questions_property
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bankCode != null">bank_code,</if>
+            questions_id,
+            <if test="questionsCode != null">questions_code,</if>
+            <if test="questionsTitle != null">questions_title,</if>
+            <if test="questionsType != null">questions_type,</if>
+            <if test="questionsScore != null">questions_score,</if>
+            <if test="rateNumber != null">rate_number,</if>
+            <if test="rightAnswer != null">right_answer,</if>
+            <if test="answerAnalyse != null">answer_analyse,</if>
+            status,
+            <if test="createBy != null">create_by,</if>
+            <if test="createDept != null">create_dept,</if>
+            create_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bankCode != null">#{bankCode},</if>
+            (select nvl(max(questions_id),0) + 1  from exam_questions_property),
+            <if test="questionsCode != null">#{questionsCode},</if>
+            <if test="questionsTitle != null">#{questionsTitle},</if>
+            <if test="questionsType != null">#{questionsType},</if>
+            <if test="questionsScore != null">#{questionsScore},</if>
+            <if test="rateNumber != null">#{rateNumber},</if>
+            <if test="rightAnswer != null">#{rightAnswer},</if>
+            <if test="answerAnalyse != null">#{answerAnalyse},</if>
+            0,
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createDept != null">#{createDept},</if>
+            sysdate,
+         </trim>
+    </insert>
+
+    <update id="updateExamQuestionsProperty" parameterType="ExamQuestionsProperty">
+        update exam_questions_property
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bankCode != null">bank_code = #{bankCode},</if>
+            <if test="questionsId != null">questions_id = #{questionsId},</if>
+            <if test="questionsTitle != null and questionsTitle != ''">questions_title = #{questionsTitle},</if>
+            <if test="questionsType != null">questions_type = #{questionsType},</if>
+            <if test="questionsScore != null">questions_score = #{questionsScore},</if>
+            <if test="rateNumber != null">rate_number = #{rateNumber},</if>
+            <if test="rightAnswer != null">right_answer = #{rightAnswer},</if>
+            <if test="answerAnalyse != null">answer_analyse = #{answerAnalyse},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createDept != null">create_dept = #{createDept},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where questions_code = #{questionsCode}
+    </update>
+
+    <delete id="deleteExamQuestionsPropertyById" parameterType="String">
+        delete from exam_questions_property where questions_code = #{questionsCode}
+    </delete>
+
+    <delete id="deleteExamQuestionsPropertyByIds" parameterType="String">
+        delete from exam_questions_property where questions_code in 
+        <foreach item="questionsCode" collection="array" open="(" separator="," close=")">
+            #{questionsCode}
+        </foreach>
+    </delete>
+</mapper>

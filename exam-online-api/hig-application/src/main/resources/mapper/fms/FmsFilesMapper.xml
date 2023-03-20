@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.fms.mapper.FmsFilesMapper">
+    
+    <resultMap type="FmsFiles" id="FmsFilesResult">
+        <result property="fileId"    column="file_id"    />
+        <result property="fileTitle"    column="file_title"    />
+        <result property="fileDescribe"    column="file_describe"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="filePath"    column="file_path"    />
+        <result property="fileUrl"    column="file_url"    />
+        <result property="fileSuffix"    column="file_suffix"    />
+        <result property="originalName"    column="original_name"    />
+        <result property="uploadName"    column="upload_name"    />
+        <result property="uploadDept"    column="upload_dept"    />
+        <result property="uploadTime"    column="upload_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectFmsFilesVo">
+        select file_id, file_title, file_describe, file_name, file_path, file_url, file_suffix, original_name, upload_name, upload_dept, upload_time, status from fms_files
+    </sql>
+
+    <select id="selectFmsFilesList" parameterType="FmsFiles" resultMap="FmsFilesResult">
+        <include refid="selectFmsFilesVo"/>
+        <where>  
+            <if test="fileTitle != null  and fileTitle != ''"> and file_title like '%' || #{fileTitle} || '%'</if>
+        </where>
+    </select>
+    
+    <select id="selectFmsFilesById" parameterType="Long" resultMap="FmsFilesResult">
+        <include refid="selectFmsFilesVo"/>
+        where file_id = #{fileId}
+    </select>
+        
+    <insert id="insertFmsFiles" parameterType="FmsFiles" >
+        insert into fms_files
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            file_id,
+            <if test="fileTitle != null and fileTitle != ''">file_title,</if>
+            <if test="fileDescribe != null and fileDescribe != ''">file_describe,</if>
+            <if test="fileName != null and fileName != ''">file_name,</if>
+            <if test="filePath != null and filePath != ''">file_path,</if>
+            <if test="fileUrl != null and fileUrl != ''">file_url,</if>
+            <if test="fileSuffix != null">file_suffix,</if>
+            <if test="originalName != null">original_name,</if>
+            <if test="uploadName != null">upload_name,</if>
+            <if test="uploadDept != null">upload_dept,</if>
+            upload_time,
+            status,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            (select nvl(max(file_id),0) + 1 from fms_files),
+            <if test="fileTitle != null and fileTitle != ''">#{fileTitle},</if>
+            <if test="fileDescribe != null and fileDescribe != ''">#{fileDescribe},</if>
+            <if test="fileName != null and fileName != ''">#{fileName},</if>
+            <if test="filePath != null and filePath != ''">#{filePath},</if>
+            <if test="fileUrl != null and fileUrl != ''">#{fileUrl},</if>
+            <if test="fileSuffix != null">#{fileSuffix},</if>
+            <if test="originalName != null">#{originalName},</if>
+            <if test="uploadName != null">#{uploadName},</if>
+            <if test="uploadDept != null">#{uploadDept},</if>
+            sysdate,
+            0,
+         </trim>
+    </insert>
+
+    <update id="updateFmsFiles" parameterType="FmsFiles">
+        update fms_files
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileTitle != null and fileTitle != ''">file_title = #{fileTitle},</if>
+            <if test="fileDescribe != null and fileDescribe != ''">file_describe = #{fileDescribe},</if>
+            upload_time = sysdate,
+        </trim>
+        where file_id = #{fileId}
+    </update>
+
+    <delete id="deleteFmsFilesById" parameterType="Long">
+        delete from fms_files where file_id = #{fileId}
+    </delete>
+
+    <delete id="deleteFmsFilesByIds" parameterType="String">
+        delete from fms_files where file_id in 
+        <foreach item="fileId" collection="array" open="(" separator="," close=")">
+            #{fileId}
+        </foreach>
+    </delete>
+</mapper>

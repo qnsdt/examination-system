@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.onlineexam.mapper.ExamTitleDataMapper">
+    
+    <resultMap type="ExamTitleData" id="ExamTitleDataResult">
+        <result property="examId"    column="exam_id"    />
+        <result property="examCode"    column="exam_code"    />
+        <result property="examName"    column="exam_name"    />
+        <result property="examDescribe"    column="exam_describe"    />
+        <result property="buildType"    column="build_type"    />
+        <result property="forceDone"    column="force_done"    />
+        <result property="examBank"    column="exam_bank"    />
+        <result property="examBankText"    column="exam_bank_text"    />
+        <result property="pictureUrl"    column="picture_url"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="currentDate"    column="current_date"    />
+        <result property="examDuration"    column="exam_duration"    />
+        <result property="judgeNumber"    column="judge_number"    />
+        <result property="radioNumber"    column="radio_number"    />
+        <result property="choiceNumber"    column="choice_number"    />
+        <result property="questionsScore"    column="questions_score"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createDept"    column="create_dept"    />
+        <result property="createTime"    column="create_time"    />        
+    </resultMap>
+
+    <select id="selectCurrentExam" parameterType="String" resultMap="ExamTitleDataResult">
+	    select a.exam_id, a.exam_code, a.exam_name, a.exam_describe, a.build_type, a.force_done, a.exam_bank, a.exam_bank_text, a.picture_url, a.start_time, a.end_time,sysdate as current_date, a.exam_duration, b.judge_number,c.radio_number, d.choice_number, e.questions_score, a.status, a.create_by, a.create_dept, a.create_time
+		from exam_task_manager a 
+		left join
+		(
+		select questions_type,nvl(count(questions_type),0) as judge_number from exam_questions_property
+		where questions_type = 1 and questions_code in
+		(
+		select questions_code from exam_task_questions where exam_code = 
+		(
+		select exam_code from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1 
+		) and end_time > sysdate and start_time =
+		(
+		select min(start_time) as start_time from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1
+		) and end_time > sysdate 
+		)
+		)
+		) group by questions_type 
+		) b on 1 = 1
+		left join
+		(
+		select questions_type,nvl(count(questions_type),0) as radio_number from exam_questions_property
+		where questions_type = 2 and questions_code in
+		(
+		select questions_code from exam_task_questions where exam_code = 
+		(
+		select exam_code from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1 
+		) and end_time > sysdate and start_time =
+		(
+		select min(start_time) as start_time from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1
+		) and end_time > sysdate 
+		)
+		)
+		) group by questions_type 
+		) c on 1 = 1
+		left join
+		(
+		select questions_type,nvl(count(questions_type),0) as choice_number from exam_questions_property
+		where questions_type = 3 and questions_code in
+		(
+		select questions_code from exam_task_questions where exam_code = 
+		(
+		select exam_code from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1 
+		) and end_time > sysdate and start_time =
+		(
+		select min(start_time) as start_time from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1
+		) and end_time > sysdate 
+		)
+		)
+		) group by questions_type 
+		) d on 1 = 1
+		left join
+		(
+		select sum(questions_score) as questions_score from exam_questions_property
+		where questions_code in
+		(
+		select questions_code from exam_task_questions where exam_code = 
+		(
+		select exam_code from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1 
+		) and end_time > sysdate and start_time =
+		(
+		select min(start_time) as start_time from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1
+		) and end_time > sysdate 
+		)
+		)
+		) 
+		) e on 1 = 1		
+		where a.exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1 
+		) and end_time > sysdate and start_time =
+		(
+		select min(start_time) as start_time from exam_task_manager where exam_code in
+		(
+		select exam_code from exam_task_person 
+		where user_code = #{userCode} and status = 1
+		) and end_time > sysdate 
+		)
+    </select>
+
+</mapper>

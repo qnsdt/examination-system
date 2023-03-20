@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.exam.mapper.ExamTaskPictureMapper">
+    
+    <resultMap type="ExamTaskPicture" id="ExamTaskPictureResult">
+        <result property="photoId"    column="photo_id"    />
+        <result property="photoCode"    column="photo_code"    />
+        <result property="photoPath"    column="photo_path"    />
+        <result property="photoUrl"    column="photo_url"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="originalName"    column="original_name"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectExamTaskPictureVo">
+        select photo_id, photo_code, photo_path, photo_url, file_name, original_name, create_by, create_time, status from exam_task_picture
+    </sql>
+
+    <select id="selectExamTaskPictureList" parameterType="ExamTaskPicture" resultMap="ExamTaskPictureResult">
+        <include refid="selectExamTaskPictureVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectExamTaskPictureById" parameterType="String" resultMap="ExamTaskPictureResult">
+        <include refid="selectExamTaskPictureVo"/>
+        where photo_code = #{photoCode}
+    </select>
+        
+    <insert id="insertExamTaskPicture" parameterType="ExamTaskPicture" >
+        insert into exam_task_picture
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            photo_id,
+            <if test="photoPath != null and photoPath != ''">photo_path,</if>
+            <if test="photoCode != null and photoCode != ''">photo_code,</if>
+            <if test="photoUrl != null and photoUrl != ''">photo_url,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="originalName != null">original_name,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+            status,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            (select nvl(max(photo_id),0) + 1 from exam_task_picture),
+            <if test="photoPath != null and photoPath != ''">#{photoPath},</if>
+            <if test="photoCode != null and photoCode != ''">#{photoCode},</if>
+            <if test="photoUrl != null and photoUrl != ''">#{photoUrl},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="originalName != null">#{originalName},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate,
+            0,
+         </trim>
+    </insert>
+
+    <update id="updateExamTaskPicture" parameterType="ExamTaskPicture">
+        update exam_task_picture
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="photoId != null">photo_id = #{photoId},</if>
+            <if test="photoPath != null and photoPath != ''">photo_path = #{photoPath},</if>
+            <if test="photoUrl != null and photoUrl != ''">photo_url = #{photoUrl},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="originalName != null">original_name = #{originalName},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where photo_code = #{photoCode}
+    </update>
+
+    <delete id="deleteExamTaskPictureById" parameterType="String">
+        delete from exam_task_picture where photo_code = #{photoCode}
+    </delete>
+
+    <delete id="deleteExamTaskPictureByIds" parameterType="String">
+        delete from exam_task_picture where photo_code in 
+        <foreach item="photoCode" collection="array" open="(" separator="," close=")">
+            #{photoCode}
+        </foreach>
+    </delete>
+</mapper>

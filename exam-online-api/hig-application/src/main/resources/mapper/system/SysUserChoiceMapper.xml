@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hig.system.mapper.SysUserChoiceMapper">
+    
+    <resultMap type="SysUserChoice" id="SysUserChoiceResult">
+        <result property="choiceCode"    column="choice_code"    />
+        <result property="userCode"    column="user_code"    />
+        <result property="orderId"    column="order_id"    />
+    </resultMap>
+
+    <resultMap type="SysUserData" id="SysUserDataResult">
+		<id     property="userId"       column="user_id"      />
+		<result property="deptId"       column="dept_id"      />
+		<result property="deptName"       column="dept_name"      />
+		<result property="userName"     column="user_name"    />
+		<result property="userCode"     column="user_code"    />
+		<result property="nickName"     column="nick_name"    />
+		<result property="email"        column="email"        />
+		<result property="phonenumber"  column="phonenumber"  />
+		<result property="sex"          column="sex"          />
+		<result property="avatar"       column="avatar"       />
+		<result property="status"       column="status"       />
+		<result property="remark"       column="remark"       />
+		<result property="choiceCode"       column="choice_code"       />
+	    <result property="orderId"       column="order_id"       />		
+	</resultMap>
+	
+	
+    <resultMap id="SysUserCopyResult" type="SysUserCopy" >
+        <result property="conditionCode"    column="condition_code"    />
+        <result property="choiceCode"    column="choice_code"    />
+    </resultMap>
+
+    <sql id="selectSysUserChoiceVo">
+        select choice_code, user_code, order_id from sys_user_choice
+    </sql>
+
+    <select id="selectSysUserChoiceList" parameterType="SysUserChoice" resultMap="SysUserChoiceResult">
+        <include refid="selectSysUserChoiceVo"/>
+        <where>
+	        <if test="choiceCode != null">
+				AND choice_code = #{choiceCode}
+			</if>                   
+        </where>
+    </select>
+
+    <sql id="selectUserVo">        
+		select a.user_id,a.user_code,a.user_name,a.nick_name,a.dept_id,dept_name,a.email,a.phonenumber,a.sex,a.avatar,a.status,a.remark from sys_user a
+		left join sys_dept b on b.dept_id = a.dept_id
+		where a.user_code in
+		(
+		select person_code from sys_group_person where group_code = #{choiceCode}
+		)
+
+    </sql>
+
+    <select id="selectGroupUserList" parameterType="SysUserData" resultMap="SysUserDataResult">
+        <include refid="selectUserVo"/>
+        <where>
+        </where>
+        order by a.user_id
+    </select>
+
+    
+    <select id="selectSysUserChoiceById" parameterType="String" resultMap="SysUserChoiceResult">
+        <include refid="selectSysUserChoiceVo"/>
+        where choice_code = #{choiceCode}
+    </select>
+        
+    <insert id="insertSysUserChoice" parameterType="SysUserChoice" >
+        insert into sys_user_choice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="choiceCode != null and choiceCode != ''">choice_code,</if>
+            <if test="userCode != null and userCode != ''">user_code,</if>
+            <if test="orderId != null">order_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="choiceCode != null and choiceCode != ''">#{choiceCode},</if>
+            <if test="userCode != null and userCode != ''">#{userCode},</if>
+            <if test="orderId != null">#{orderId},</if>
+         </trim>
+    </insert>
+    
+    <insert id="copySysUser" parameterType="SysUserCopy" >
+        insert into sys_user_choice select #{choiceCode},user_code,order_id  from temp_user_choice where choice_code = #{conditionCode}
+    </insert>
+    
+    <insert id="copyTempUser" parameterType="SysUserCopy" >
+        insert into temp_user_choice select #{choiceCode},user_code,order_id  from sys_user_choice where choice_code = #{conditionCode}
+    </insert>
+
+    <update id="updateSysUserChoice" parameterType="SysUserChoice">
+        update sys_user_choice
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userCode != null and userCode != ''">user_code = #{userCode},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+        </trim>
+        where choice_code = #{choiceCode}
+    </update>
+
+    <delete id="deleteSysUserChoiceById" parameterType="String">
+        delete from sys_user_choice where choice_code = #{choiceCode}
+    </delete>
+
+    <delete id="deleteSysUserChoiceByIds" parameterType="String">
+        delete from sys_user_choice where choice_code in 
+        <foreach item="choiceCode" collection="array" open="(" separator="," close=")">
+            #{choiceCode}
+        </foreach>
+    </delete>
+</mapper>
