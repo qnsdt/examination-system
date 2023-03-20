@@ -8,7 +8,7 @@
     "imageCompressEnable": true, 
     "imageCompressBorder": 1600, 
     "imageInsertAlign": "none", 
-    "imageUrlPrefix": "http://10.200.121.66:8080/exam-online-api",
+    "imageUrlPrefix": "http://127.0.0.1:8080/exam-online-api",
     "imagePathFormat": "/photo/ueditor/{yyyy}{mm}{dd}/{time}{rand:6}", 
                                 
 
@@ -35,7 +35,7 @@
     "videoActionName": "uploadvideo", 
     "videoFieldName": "upfile", 
     "videoPathFormat": "/photo/ueditor/{yyyy}{mm}{dd}/{time}{rand:6}",
-    "videoUrlPrefix": "http://10.200.121.66:8080/exam-online-api",
+    "videoUrlPrefix": "http://127.0.0.1:8080/exam-online-api",
     "videoMaxSize": 102400000, 
     "videoAllowFiles": [
         ".mp4", ".ogg", ".webm"], 

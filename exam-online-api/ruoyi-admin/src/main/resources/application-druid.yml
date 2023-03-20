@@ -11,9 +11,9 @@ spring:
             #    username: root
             #    password: password
             
-                url: jdbc:oracle:thin:@10.200.121.68:1521/xchwdb
+                url: jdbc:oracle:thin:@127.0.0.1:1521/xchwdb
                 username: exam_user
-                password: D0oihYvEvf83
+                password: exam_user
                 
             # 从库数据源
             slave:
