@@ -36,7 +36,6 @@ public class ExamTaskAnswerController extends BaseController
     /**
      * 查询考试实时数据列表
      */
-    @PreAuthorize("@ss.hasPermi('onlineexam:taskanswer:list')")
     @GetMapping("/list")
     public TableDataInfo list(ExamTaskAnswer examTaskAnswer)
     {
@@ -48,8 +47,6 @@ public class ExamTaskAnswerController extends BaseController
     /**
      * 导出考试实时数据列表
      */
-    @PreAuthorize("@ss.hasPermi('onlineexam:taskanswer:export')")
-    @Log(title = "考试实时数据", businessType = BusinessType.EXPORT)
     @GetMapping("/export")
     public AjaxResult export(ExamTaskAnswer examTaskAnswer)
     {
@@ -61,7 +58,6 @@ public class ExamTaskAnswerController extends BaseController
     /**
      * 获取考试实时数据详细信息
      */
-    @PreAuthorize("@ss.hasPermi('onlineexam:taskanswer:query')")
     @GetMapping(value = "/{examCode}")
     public AjaxResult getInfo(@PathVariable("examCode") String examCode)
     {
@@ -71,8 +67,6 @@ public class ExamTaskAnswerController extends BaseController
     /**
      * 新增考试实时数据
      */
-    @PreAuthorize("@ss.hasPermi('onlineexam:taskanswer:add')")
-    @Log(title = "考试实时数据", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody ExamTaskAnswer examTaskAnswer)
     {
@@ -83,8 +77,6 @@ public class ExamTaskAnswerController extends BaseController
     /**
      * 修改考试实时数据
      */
-    @PreAuthorize("@ss.hasPermi('onlineexam:taskanswer:edit')")
-    @Log(title = "考试实时数据", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody ExamTaskAnswer examTaskAnswer)
     {
@@ -94,8 +86,6 @@ public class ExamTaskAnswerController extends BaseController
     /**
      * 删除考试实时数据
      */
-    @PreAuthorize("@ss.hasPermi('onlineexam:taskanswer:remove')")
-    @Log(title = "考试实时数据", businessType = BusinessType.DELETE)
 	@GetMapping("/remove/{examCodes}")
     public AjaxResult remove(@PathVariable String[] examCodes)
     {
