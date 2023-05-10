@@ -8,37 +8,48 @@
 #### 功能简介
 题库设置
 
-![输入图片说明](picture/questionbankimage.png)\
+![questionbankimage](https://user-images.githubusercontent.com/52407256/226363109-dc73bc95-18e6-4806-9fcd-1c78b56f2813.png)
 
 题目管理
 1. 列表
 
-![输入图片说明](picture/questionlistimage.png)
+![questionlistimage](https://user-images.githubusercontent.com/52407256/226363447-57452523-f2f2-4702-ad25-3a4c79c00dc5.png)
+
 
 2. 新增
 
-![输入图片说明](picture/newquestionimage.png)
+![newquestionimage](https://user-images.githubusercontent.com/52407256/226363554-fe0db84e-7e04-42fd-93fb-171cfd900afb.png)
+
 
 创建考试
 
 1.内容
 
-![输入图片说明](picture/createcontentimage.png)
+![createcontentimage](https://user-images.githubusercontent.com/52407256/226363671-1fdcb95b-d77d-4e78-80d9-4735c5c73311.png)
+
+
 
 2.组题
 
-![输入图片说明](picture/choicequestionsimage.png)
+![choicequestionsimage](https://user-images.githubusercontent.com/52407256/226363752-163a4fed-6f1b-44aa-a5aa-da921d548385.png)
+
+
 
 3.选人
 
-![输入图片说明](picture/choiceusersimage.png)
+![choiceusersimage](https://user-images.githubusercontent.com/52407256/226363824-f1f3805c-b0e9-4a1a-9b3e-8dcbab36a69e.png)
+
+
 
 在线考试
 
 1.考试等待
 
-![输入图片说明](picture/waitimage.png)
+![waitimage](https://user-images.githubusercontent.com/52407256/226363899-86dfca94-4967-4f2b-833a-08880dc8178c.png)
+
+
 
 2.进入考试
 
-![输入图片说明](picture/onlineexamimage.png)
+![onlineexamimage](https://user-images.githubusercontent.com/52407256/226363976-b2e2ca26-68a2-4f66-9357-1801326ca651.png)
+
